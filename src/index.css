@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Set default font */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom utility class for Drop-off / Pick-up buttons */
+.log-button {
+  @apply py-3 px-5 text-sm font-medium rounded-lg shadow-sm transition-all duration-200 ease-in-out flex items-center justify-center;
+}
+
+.log-button:hover {
+  @apply shadow-md;
+}
