@@ -130,6 +130,7 @@ function AddChildForm() {
                   <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
                   <select id="grade" name="grade" value={formData.grade} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option value="">Select Grade</option>
+                    <option value="UPK"></option>
                     <option value="K">Kindergarten</option>
                     <option value="1">Grade 1</option>
                     <option value="2">Grade 2</option>
@@ -176,6 +177,3 @@ function AddChildForm() {
 }
 
 export default AddChildForm;
-/* There is no additional code required at $PLACEHOLDER$. 
-The file might appear green because it has been recently modified or staged for commit in your version control system (e.g., Git). 
-Check your Git status or your editor's color legend for clarification. */
