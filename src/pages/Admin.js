@@ -30,7 +30,7 @@ function Admin() {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState("addStudent"); // 'addStudent', 'editStudent', 'logEntry'
   const [selectedStudent, setSelectedStudent] = useState(null); // Student object for editing
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const year = new Date().getFullYear();
   const navigate = useNavigate();
   const chartInstanceRef = useRef(null);
@@ -581,7 +581,7 @@ useEffect(() => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md flex flex-col fixed inset-y-0 left-0 z-30 overflow-y-auto">
+      <aside className={`w-64 bg-white shadow-md flex flex-col fixed inset-y-0 left-0 z-30 overflow-y-auto transition-transform transform lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:static`}>
         {/* Sidebar Content... */}
          <div className="p-4 border-b">
            <a href="#dashboard" onClick={(e) => { e.preventDefault(); switchSection('dashboard-content', 'Dashboard Overview'); }} className="text-xl font-semibold text-gray-700 hover:text-blue-600 transition duration-150 flex items-center">
@@ -597,11 +597,29 @@ useEffect(() => {
         </div>
       </aside>
 
+      {isSidebarOpen && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-30 z-20 lg:hidden"
+    onClick={() => setIsSidebarOpen(false)}
+  />
+)}
+
+
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col ml-64">
+      <div className="flex-1 flex flex-col lg:ml-64">4">
         {/* Sticky Header */}
         <header className="bg-white shadow-sm p-4 border-b sticky top-0 z-20">
           <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Hamburger button for mobile */}
+<button
+  className="lg:hidden text-gray-600 focus:outline-none mr-4"
+  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+>
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>
+
             <h1 id="page-title" className="text-xl font-semibold text-gray-800">{pageTitle}</h1>
             <div className="space-x-2">
               {/* Show Add Student only on Student Roster page? */}
