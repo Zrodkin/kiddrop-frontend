@@ -33,7 +33,7 @@ function Login() {
       // --- Logging for verification ---
       console.log("Login Success! Data received:", data); // Log the received data
       console.log("Attempting to save token:", data.token);
-      localStorage.setItem("authToken", data.token); // Use the correct key "authToken"
+      localStorage.setItem("token", data.token); // Use the correct key "token"
       console.log("Token SAVED to localStorage"); // Confirm save call happened
 
       console.log("Attempting to save role:", data.user.role);
@@ -59,7 +59,7 @@ function Login() {
       setMessage(`❌ ${err.message}`);
       console.error("Login Catch Block Error:", err);
       // Clear potentially stored items on failure
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       localStorage.removeItem('userRole');
       localStorage.removeItem('userId');
     }

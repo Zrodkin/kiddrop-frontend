@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode'; // Import the decoder
 
 const checkAuthStatus = () => {
   // 1. Get the token from localStorage (or wherever you store it)
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
 
   // 2. Check if token exists
   if (!token) {
@@ -25,7 +25,7 @@ const checkAuthStatus = () => {
     // 5. Compare expiration time (exp is in seconds) with current time
     if (decodedToken.exp < currentTime) {
       console.log("AuthCheck: Token expired.");
-      localStorage.removeItem('authToken'); // Optional: Clear expired token
+      localStorage.removeItem('token'); // Optional: Clear expired token
       localStorage.removeItem('userRole'); // Optional: Clear related items
       return false; // Token is expired
     }
@@ -37,7 +37,7 @@ const checkAuthStatus = () => {
   } catch (error) {
     // If token is invalid or decoding fails
     console.error("AuthCheck: Error decoding token:", error);
-    localStorage.removeItem('authToken'); // Clear invalid token
+    localStorage.removeItem('token'); // Clear invalid token
     localStorage.removeItem('userRole');
     return false; // Not authenticated
   }
@@ -45,7 +45,7 @@ const checkAuthStatus = () => {
 
 const getUserRole = () => {
   // 1. Get the token
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
 
   if (!token) {
     return null; // No token, no role

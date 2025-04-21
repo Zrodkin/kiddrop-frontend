@@ -1,46 +1,49 @@
-// frontend/src/components/Navbar.js
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React from 'react';
+// Import navigation components from React Router
+import { Link, useNavigate } from 'react-router-dom'; // Removed NavLink and useLocation as they are no longer needed for just the brand link
+// Import Font Awesome components and icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSchool, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // Removed faHome
 
 function Navbar() {
   const navigate = useNavigate();
-  const location = useLocation();
 
+  // Logout handler - more specific than localStorage.clear()
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    console.log("Logging out...");
+    localStorage.removeItem("token"); // Remove specific items
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
+    navigate("/login"); // Redirect to login page
   };
 
-  return (
-    <nav className="bg-white text-gray-800 p-4 shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-      <div className="container mx-auto flex justify-between items-center max-w-5xl">
-        <div className="flex items-center space-x-6">
-          <a
-            href="/dashboard"
-            className="text-xl font-semibold text-gray-700 hover:text-blue-600 transition duration-150"
-          >
-            <i className="fas fa-school mr-2 text-blue-500"></i> School Check-in
-          </a>
+  // Removed getNavLinkClass function as NavLink is no longer used
 
-          <div className="hidden md:flex items-center space-x-4">
-            <a
-              href="/dashboard"
-              className={`text-gray-600 hover:text-blue-600 transition duration-150 ${
-                location.pathname === "/dashboard" ? "nav-link-active" : ""
-              }`}
-            >
-              <i className="fas fa-home mr-1"></i> Home
-            </a>
-            {/* You can add more links here later if needed */}
-          </div>
+  return (
+    // Navbar container - no longer fixed position
+    <nav className="bg-white shadow-sm border-b border-gray-200 w-full py-3 px-4">
+      <div className="container mx-auto flex justify-between items-center max-w-5xl">
+        {/* Left side: Logo/Brand Link Only */}
+        <div className="flex items-center">
+          {/* Brand/Logo Link */}
+          <Link
+            to="/dashboard" // Link to parent dashboard (or appropriate default logged-in page)
+            className="flex items-center text-xl font-semibold text-gray-700 hover:text-blue-600 transition duration-150"
+          >
+            <FontAwesomeIcon icon={faSchool} className="mr-2 text-blue-500" />
+            School Check-in
+          </Link>
+          {/* Removed the div containing the NavLinks */}
         </div>
 
+        {/* Right side: Logout Button */}
         <div>
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-200 text-sm font-medium shadow-sm hover:shadow-md"
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-200 text-sm font-medium shadow-sm hover:shadow-md flex items-center"
           >
-            <i className="fas fa-sign-out-alt mr-1 hidden sm:inline"></i> Logout
+            <FontAwesomeIcon icon={faSignOutAlt} className="mr-1 hidden sm:inline" />
+            Logout
           </button>
         </div>
       </div>

@@ -6,18 +6,48 @@ function StudentManager() {
   const [grade, setGrade] = useState("");
   const [editId, setEditId] = useState(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
 
   const fetchStudents = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/students`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setStudents(data);
+      
+      // Check if the response is ok
+      if (!res.ok) {
+        console.error("API error:", data);
+        if (res.status === 401) {
+          // Token expired or invalid - redirect to login
+          localStorage.removeItem("token");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("userId");
+          window.location.href = '/login';
+          return;
+        }
+        setMessage(`❌ ${data.message || 'Failed to fetch students'}`);
+        setStudents([]);
+        return;
+      }
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setStudents(data);
+      } else {
+        console.error("Expected array but got:", data);
+        setStudents([]);
+        setMessage("❌ Unexpected data format from server");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
+      setMessage(`❌ ${err.message}`);
+      setStudents([]); // Set to empty array to prevent map error
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,6 +64,7 @@ function StudentManager() {
       return;
     }
 
+    const token = localStorage.getItem("token");
     const url = editId
       ? `${process.env.REACT_APP_API_URL}/api/admin/students/${editId}`
       : `${process.env.REACT_APP_API_URL}/api/admin/students`;
@@ -69,6 +100,7 @@ function StudentManager() {
   };
 
   const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this student?")) return;
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/students/${id}`, {
@@ -114,37 +146,49 @@ function StudentManager() {
         {message && <p className="text-sm mt-2">{message}</p>}
       </form>
 
-      <table className="w-full table-auto text-sm border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Grade</th>
-            <th className="px-4 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((s) => (
-            <tr key={s._id} className="border-t">
-              <td className="px-4 py-2">{s.name}</td>
-              <td className="px-4 py-2">{s.grade}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button
-                  onClick={() => handleEdit(s)}
-                  className="text-blue-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(s._id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </td>
+      {loading ? (
+        <div className="text-center py-4">Loading students...</div>
+      ) : (
+        <table className="w-full table-auto text-sm border">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 text-left">Name</th>
+              <th className="px-4 py-2 text-left">Grade</th>
+              <th className="px-4 py-2 text-left">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {Array.isArray(students) && students.length > 0 ? (
+              students.map((s) => (
+                <tr key={s._id} className="border-t">
+                  <td className="px-4 py-2">{s.name}</td>
+                  <td className="px-4 py-2">{s.grade}</td>
+                  <td className="px-4 py-2 space-x-2">
+                    <button
+                      onClick={() => handleEdit(s)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(s._id)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="px-4 py-2 text-center text-gray-500">
+                  {message || "No students found"}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
