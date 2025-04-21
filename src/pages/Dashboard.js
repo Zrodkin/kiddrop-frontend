@@ -140,7 +140,6 @@ function Dashboard() {
       )}
 
       <main className="container mx-auto px-4">
-        {/* Add Child Button */}
         <div className="flex justify-end mb-4">
           <button
             onClick={() => navigate("/add-child")}
@@ -181,76 +180,80 @@ function Dashboard() {
             </div>
           ) : (
             <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 bg-gray-50">
-              {children.map((child) => {
-                const statusInfo = getStatusInfo(child.status);
-                const isCurrentActionLoading = actionLoading === child._id;
-                const isDropoffAction = child.status !== "checked-in";
-                const nextAction = isDropoffAction ? "dropoff" : "pickup";
+              {children
+                .filter((child) => child.approvalStatus === "approved")
+                .map((child) => {
+                  const statusInfo = getStatusInfo(child.status);
+                  const isCurrentActionLoading = actionLoading === child._id;
+                  const isDropoffAction = child.status !== "checked-in";
+                  const nextAction = isDropoffAction ? "dropoff" : "pickup";
 
-                return (
-                  <div
-                    key={child._id}
-                    className={`relative bg-white rounded-lg shadow-lg overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl ${
-                      isCurrentActionLoading ? "opacity-60" : ""
-                    }`}
-                  >
-                    <div className="p-5 flex flex-col h-full">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="text-xl font-bold text-indigo-800">{child.name}</h3>
-                          <p className="text-sm text-gray-500">Grade {child.grade}</p>
+                  return (
+                    <div
+                      key={child._id}
+                      className={`relative bg-white rounded-lg shadow-lg overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl ${
+                        isCurrentActionLoading ? "opacity-60" : ""
+                      }`}
+                    >
+                      <div className="p-5 flex flex-col h-full">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="text-xl font-bold text-indigo-800">{child.name}</h3>
+                            <p className="text-sm text-gray-500">Grade {child.grade}</p>
+                          </div>
+                          <button
+                            onClick={() => navigate(`/edit-child/${child._id}`)}
+                            className="text-gray-400 hover:text-indigo-600 transition duration-150 p-1 disabled:opacity-50"
+                            disabled={isCurrentActionLoading}
+                            title="Edit Info"
+                          >
+                            <FontAwesomeIcon icon={faUserEdit} size="lg" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => navigate(`/edit-child/${child._id}`)}
-                          className="text-gray-400 hover:text-indigo-600 transition duration-150 p-1 disabled:opacity-50"
-                          disabled={isCurrentActionLoading}
-                          title="Edit Info"
-                        >
-                          <FontAwesomeIcon icon={faUserEdit} size="lg" />
-                        </button>
-                      </div>
 
-                      <div className="flex items-center justify-between my-4 text-sm">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full shadow-sm ${statusInfo.style}`}
-                        >
-                          <FontAwesomeIcon icon={statusInfo.icon} className="mr-1.5" />
-                          {statusInfo.text}
-                        </span>
-                        <span className="text-gray-500 flex items-center">
-                          <FontAwesomeIcon icon={faClock} className="mr-1.5 text-gray-400" />
-                          {formatDateTime(child.lastActivity)}
-                        </span>
-                      </div>
+                        <div className="flex items-center justify-between my-4 text-sm">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full shadow-sm ${statusInfo.style}`}
+                          >
+                            <FontAwesomeIcon icon={statusInfo.icon} className="mr-1.5" />
+                            {statusInfo.text}
+                          </span>
 
-                      <div className="mt-auto pt-4">
-                        <button
-                          className={`w-full py-3 px-4 rounded-lg text-base font-semibold transition duration-150 ease-in-out flex items-center justify-center shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed ${
-                            isDropoffAction
-                              ? "bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-emerald-500"
-                              : "bg-sky-500 hover:bg-sky-600 text-white focus:ring-sky-500"
-                          }`}
-                          onClick={() => handleAction(child._id, nextAction)}
-                          disabled={
-                            isCurrentActionLoading ||
-                            (child.status === "awaiting" && nextAction === "pickup")
-                          }
-                        >
-                          {isCurrentActionLoading ? (
-                            <FontAwesomeIcon icon={faSpinner} spin className="mr-2" />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon={isDropoffAction ? faArrowDown : faArrowUp}
-                              className="mr-2"
-                            />
-                          )}
-                          {isDropoffAction ? "Log Drop-off" : "Log Pick-up"}
-                        </button>
+                          <span className="text-gray-500 flex items-center">
+                            <FontAwesomeIcon icon={faClock} className="mr-1.5 text-gray-400" />
+                            {formatDateTime(child.lastActivity)}
+                          </span>
+                        </div>
+
+                        <div className="mt-auto pt-4">
+                          <button
+                            className={`w-full py-3 px-4 rounded-lg text-base font-semibold transition duration-150 ease-in-out flex items-center justify-center shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed ${
+                              isDropoffAction
+                                ? "bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-emerald-500"
+                                : "bg-sky-500 hover:bg-sky-600 text-white focus:ring-sky-500"
+                            }`}
+                            onClick={() => handleAction(child._id, nextAction)}
+                            disabled={
+                              isCurrentActionLoading ||
+                              (child.status === "awaiting" && nextAction === "pickup") ||
+                              child.approvalStatus !== "approved"
+                            }
+                          >
+                            {isCurrentActionLoading ? (
+                              <FontAwesomeIcon icon={faSpinner} spin className="mr-2" />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon={isDropoffAction ? faArrowDown : faArrowUp}
+                                className="mr-2"
+                              />
+                            )}
+                            {isDropoffAction ? "Log Drop-off" : "Log Pick-up"}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           )}
 
