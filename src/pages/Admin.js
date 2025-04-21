@@ -112,30 +112,7 @@ function Admin() {
     }
   }, [navigate, apiUrl]);
 
-  const handleApproval = async (studentId, approvalStatus) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${apiUrl}/api/admin/students/${studentId}/approval`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ approvalStatus })
-      });
-  
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Failed to update approval");
-      }
-  
-      showAppMessage(`✅ Student ${approvalStatus}`);
-      fetchData(); // Refresh list
-    } catch (err) {
-      console.error("Approval error:", err);
-      showAppMessage(`❌ ${err.message}`, false);
-    }
-  };
+  // Removed duplicate handleApproval function
   
 
   // --- Handle Logout ---
@@ -579,9 +556,12 @@ useEffect(() => {
 
   // --- Main Admin Component Render ---
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar */}
-      <aside className={`w-64 bg-white shadow-md flex flex-col fixed inset-y-0 left-0 z-30 overflow-y-auto transition-transform transform lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:static`}>
+      <aside className={`bg-white shadow-md flex flex-col z-30 overflow-y-auto 
+  fixed inset-y-0 left-0 transform transition-transform duration-300 ease-in-out 
+  w-64 lg:static lg:translate-x-0 
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         {/* Sidebar Content... */}
          <div className="p-4 border-b">
            <a href="#dashboard" onClick={(e) => { e.preventDefault(); switchSection('dashboard-content', 'Dashboard Overview'); }} className="text-xl font-semibold text-gray-700 hover:text-blue-600 transition duration-150 flex items-center">
@@ -606,10 +586,10 @@ useEffect(() => {
 
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:ml-64">4">
+      <div className="flex-1 flex flex-col lg:ml-64">
         {/* Sticky Header */}
         <header className="bg-white shadow-sm p-4 border-b sticky top-0 z-20">
-          <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-between items-center gap-2 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Hamburger button for mobile */}
 <button
   className="lg:hidden text-gray-600 focus:outline-none mr-4"
@@ -641,7 +621,7 @@ useEffect(() => {
         {/* Scrollable Main Content */}
         <main id="main-content" className="flex-1 overflow-y-auto bg-gray-100">
           {/* Centered Container with Max Width and Padding */}
-          <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             {/* Display loading or error for initial data fetch */}
             {loading ? (
               <div className="text-center text-gray-600 py-16"> <FontAwesomeIcon icon={faSpinner} spin size="3x" className="text-blue-500 mb-3" /> <p>Loading dashboard data...</p> </div>
