@@ -556,7 +556,7 @@ useEffect(() => {
 
   // --- Main Admin Component Render ---
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-gray-100 overflow-x-hidden">
       {/* Sidebar */}
       <aside className={`bg-white shadow-md flex flex-col z-30 overflow-y-auto 
   fixed inset-y-0 left-0 transform transition-transform duration-300 ease-in-out 
