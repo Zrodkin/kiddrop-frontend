@@ -157,6 +157,33 @@ function Admin() {
     );
   }, [searchQuery, students]);
 
+  // Add this function right after the useEffect for student filtering in the Admin component
+// --- Student Approval ---
+const handleApproval = async (studentId, approvalStatus) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${apiUrl}/api/admin/students/${studentId}/approval`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ approvalStatus })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Failed to update approval");
+    }
+
+    showAppMessage(`✅ Student ${approvalStatus}`);
+    fetchData(); // Refresh list
+  } catch (err) {
+    console.error("Approval error:", err);
+    showAppMessage(`❌ ${err.message}`, false);
+  }
+};
+
   // --- Delete Student ---
   const handleDeleteStudent = async (id) => {
     if (!window.confirm("Are you sure you want to remove this student? This will also delete their logs.")) return;
@@ -360,30 +387,6 @@ useEffect(() => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleApproval = async (studentId, approvalStatus) => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${apiUrl}/api/admin/students/${studentId}/approval`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ approvalStatus })
-        });
-    
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.message || "Failed to update approval");
-        }
-    
-        showAppMessage(`✅ Student ${approvalStatus}`);
-        fetchData(); // Refresh list
-      } catch (err) {
-        console.error("Approval error:", err);
-        showAppMessage(`❌ ${err.message}`, false);
-      }
-    };
     
 
     const handleSubmit = async (e) => {
