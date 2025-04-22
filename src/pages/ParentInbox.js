@@ -73,7 +73,7 @@ function ParentInbox() {
     const [selectedNotification, setSelectedNotification] = useState(null);
     const [isUpdating, setIsUpdating] = useState(false); // For Mark All Read button
 
-    const API_BASE_URL = '/api/parent/notifications'; // Configure if needed
+    const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api/parent/notifications`; // Configure if needed
 
     // Fetch notifications on component mount
     const fetchNotifications = useCallback(async () => {
