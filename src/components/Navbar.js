@@ -6,31 +6,59 @@ import { faSchool, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icon
 function Navbar() {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUnread = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("token");
-        const res = await fetch("/api/parent/notifications", {
+        
+        if (!token) {
+          console.log("No token found");
+          setLoading(false);
+          return;
+        }
+        
+        // Use the full Heroku URL instead of relative path
+        const apiUrl = process.env.REACT_APP_API_URL || 'https://kiddrop-7652818b8f01.herokuapp.com';
+        const res = await fetch(`${apiUrl}/api/parent/notifications`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
 
+        if (!res.ok) {
+          console.log(`API responded with status: ${res.status}`);
+          setLoading(false);
+          return;
+        }
+
         const data = await res.json();
-        const unread = data.filter(n => !n.read).length;
-        setUnreadCount(unread);
+        
+        if (Array.isArray(data)) {
+          const unread = data.filter(n => !n.read).length;
+          setUnreadCount(unread);
+          console.log(`Found ${unread} unread notifications`);
+        } else {
+          console.error("API response is not an array:", data);
+        }
       } catch (err) {
-        console.error("Failed to fetch unread notifications:", err);
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUnread();
+    
+    // Set up polling interval for refreshing notification count
+    const interval = setInterval(fetchUnread, 60000); // check every minute
+    
+    return () => clearInterval(interval);
   }, []);
 
-  // Logout handler
   const handleLogout = () => {
-    console.log("Logging out...");
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     localStorage.removeItem("userId");
