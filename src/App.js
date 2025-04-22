@@ -9,6 +9,7 @@ import AdminPage from "./pages/Admin"; // Admin Dashboard
 import UpdateChildForm from "./pages/UpdateChildForm";
 import AddChildForm from "./pages/AddChildForm.js"; // ✅ New import
 import AdminSendAlertPage from './pages/AdminSendAlertPage';
+import ParentInbox from "./pages/ParentInbox";
 // ...
 
 // Ensure this route is inside the <Routes> component
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+    
 
         {/* Parent Routes */}
         <Route
@@ -65,6 +67,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/inbox"
+  element={
+    <ProtectedRoute>
+      <>
+        <Navbar />
+        <ParentInbox />
+      </>
+    </ProtectedRoute>
+  }
+/>
+
 
         {/* Admin Routes */}
         <Route
