@@ -111,12 +111,11 @@ function ParentInbox() {
             const response = await fetch(`${API_BASE_URL}/${notificationId}/read`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
-                    // Add Authentication headers if required
-                    // 'Authorization': 'Bearer YOUR_TOKEN_HERE'
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem("token")}`
                 },
-                // Body might not be needed if the endpoint just uses the ID
-            });
+              });
+              
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -163,11 +162,15 @@ function ParentInbox() {
         setError(null); // Clear previous errors
 
         const promises = unreadNotifications.map(n =>
-             fetch(`${API_BASE_URL}/${n._id}/read`, {
-                method: 'PATCH',
-                 headers: { 'Content-Type': 'application/json' /* Add Auth if needed */ },
+            fetch(`${API_BASE_URL}/${n._id}/read`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("token")}`
+              }
             })
-        );
+          );
+          
 
         try {
             const responses = await Promise.all(promises);
