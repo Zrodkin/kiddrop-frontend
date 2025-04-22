@@ -7,7 +7,12 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard"; // Parent Dashboard
 import AdminPage from "./pages/Admin"; // Admin Dashboard
 import UpdateChildForm from "./pages/UpdateChildForm";
-import AddChildForm from "./pages/AddChildForm"; // ✅ New import
+import AddChildForm from "./pages/AddChildForm.js"; // ✅ New import
+import AdminSendAlertPage from './pages/AdminSendAlertPage';
+// ...
+
+// Ensure this route is inside the <Routes> component
+// ...
 
 // Layout/Shared Components
 import Navbar from "./components/Navbar";
@@ -71,6 +76,7 @@ function App() {
           }
         >
           <Route index element={<AdminPage />} />
+          <Route path="send-alert" element={<AdminSendAlertPage />} />
           <Route path="*" element={<Navigate to="/admin" />} />
         </Route>
 
